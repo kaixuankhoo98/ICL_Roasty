@@ -1,5 +1,5 @@
 #include "RoastyModel.hpp"
-#define NO_SUCH_MEMBER_IN_LIST 69
+#define NO_SUCH_MEMBER_IN_LIST 69 // hehe
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ======================== BEAN =========================
@@ -130,6 +130,7 @@ Roast::Roast(long timestamp)
 Roast::Roast(Roast const& copyRoast)
     : roastTimestamp(copyRoast.roastTimestamp), numberOfIngredients(copyRoast.numberOfIngredients),
     numberOfEvents(copyRoast.numberOfEvents) {
+        // copies ingredients
         if (copyRoast.ingredientHead != nullptr) {
             ingredientHead = new Ingredient(*copyRoast.ingredientHead);
             Ingredient* toPtr = ingredientHead; // copy to this roast
@@ -141,6 +142,7 @@ Roast::Roast(Roast const& copyRoast)
                 fromPtr = fromPtr->nextIngredient;
             } 
         }
+        // copies events
         if (copyRoast.eventHead != nullptr) {
             eventHead = new Event(*copyRoast.eventHead);
             Event* toPtr = eventHead;
@@ -159,22 +161,7 @@ Roast& Roast::operator=(Roast const& copyRoast) {
     numberOfIngredients = copyRoast.numberOfIngredients;
     numberOfEvents = copyRoast.numberOfEvents;
 
-    // delete and free the memory!
-    Event* currentEventPtr = eventHead;
-    while (currentEventPtr != nullptr) {
-        Event* nextEventPtr = currentEventPtr->nextEvent; // temp
-        delete currentEventPtr;
-        currentEventPtr = nextEventPtr; // reallocate the temp pointer
-    }// nextEventPtr dies
-
-    Ingredient* currentIngredientPtr = ingredientHead;
-    while (currentIngredientPtr != nullptr) {
-        Ingredient* nextIngredientPtr = currentIngredientPtr->nextIngredient;
-        delete currentIngredientPtr;
-        currentIngredientPtr = nextIngredientPtr;
-    }
-
-    //copy ingredients
+    // copies ingredients
     if (copyRoast.ingredientHead != nullptr) {
         ingredientHead = new Ingredient(*copyRoast.ingredientHead);
         Ingredient* toPtr = ingredientHead; // copy to this roast
@@ -186,7 +173,7 @@ Roast& Roast::operator=(Roast const& copyRoast) {
             fromPtr = fromPtr->nextIngredient;
         }
     }
-    //copy events
+    // copies events
     if (copyRoast.eventHead != nullptr) {
         eventHead = new Event(*copyRoast.eventHead);
         Event* toPtr = eventHead;

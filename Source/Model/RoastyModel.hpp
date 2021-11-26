@@ -13,6 +13,7 @@ public:
     Bean(std::string const& name); // constructor
     Bean(Bean const& copyBean); // copy constructor
     Bean& operator=(Bean const& copyBean); // assignment
+    ~Bean(){}; // default constructor explicitly defined to abide by rule of 3
 
     // ------- Getter functions -------
     std::string const& getName () const;
@@ -32,6 +33,7 @@ public:
     Ingredient(Bean const& bean, int amount); // constructor
     Ingredient(Ingredient const& copyIngredient); // copy constructor
     Ingredient& operator=(Ingredient const& copyIngredient); // assignment
+    ~Ingredient(){}; // default constructor explicitly defined to abide by rule of 3
     
     // ------- Getters and setters -------
     Bean const& getBean() const;
@@ -50,6 +52,7 @@ public:
     EventValue(long setValue); // constructor
     EventValue(EventValue const& copyValue); // copy constructor
     EventValue& operator=(EventValue const& copyValue); // assignment
+    ~EventValue(){}; // default constructor explicitly defined to abide by rule of 3
     
     // ------- Getters and setters -------
     long getValue() const;
@@ -72,7 +75,7 @@ public:
     Event(std::string const& type, long timestamp, EventValue* copyValue); // with eventValue
     Event(Event const& copyEvent); // copy constructor
     Event& operator=(Event& copyEvent); // assignment
-    ~Event(); // deconstructor
+    ~Event(); // deconstructor must delete extra objects
 
     // ------- Getters and setters -------
     std::string const& getType() const;
