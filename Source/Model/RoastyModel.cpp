@@ -1,358 +1,322 @@
 #include "RoastyModel.hpp"
 #define NO_SUCH_MEMBER_IN_LIST 69
 
-// =============== Bean ===================
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ======================== BEAN =========================
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// -------------------- CONSTRUCTION ---------------------
 // constructor
-Bean::Bean(std::string const& beanName)
-    : name(beanName){}
+Bean::Bean(std::string const& name)
+    : name(name) {}
 // copy constructor
 Bean::Bean(Bean const& copyBean)
     : name(copyBean.name) {}
-// assignment operator
+// assignment overload
 Bean& Bean::operator=(Bean const& copyBean) {
     name = copyBean.name;
     return *this;
 }
-// getter
-std::string const& Bean::getName() const {
+// ------------------ GETTER FUNCTIONS -------------------
+std::string const& Bean::getName () const {
     return name;
 }
 
-// =========== Ingredient ================
+
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ===================== INGREDIENT ======================
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// -------------------- CONSTRUCTION ---------------------
 // constructor
 Ingredient::Ingredient(Bean const& bean, int amount)
-    : bean(bean), amount(amount) {}
+    : ingredientBean(bean), beanAmount(amount) {}
 // copy constructor
-Ingredient::Ingredient(Ingredient const& copyIngredient)
-    : bean(copyIngredient.bean), amount(copyIngredient.amount),
-    next(copyIngredient.next) {}
+Ingredient::Ingredient(Ingredient const& copyIngredient) 
+    : ingredientBean(copyIngredient.ingredientBean), beanAmount(copyIngredient.beanAmount),
+    nextIngredient(copyIngredient.nextIngredient) {}
 // assignment operator
 Ingredient& Ingredient::operator=(Ingredient const& copyIngredient) {
-    bean = copyIngredient.bean;
-    amount = copyIngredient.amount;
-    next = copyIngredient.next;
-    return *this;
+    ingredientBean = copyIngredient.ingredientBean;
+    beanAmount = copyIngredient.beanAmount;
+    nextIngredient = copyIngredient.nextIngredient;
+    return *this; 
 }
-// getter and setter
+// -------------- GETTER & SETTER FUNCTIONS --------------
 Bean const& Ingredient::getBean() const {
-    return bean;
+    return ingredientBean;
 }
 int Ingredient::getAmount() const {
-    return amount;
+    return beanAmount;
 }
-void Ingredient::setAmount(int newAmount) {
-    this->amount = newAmount;
+void Ingredient::setAmount(int amount) {
+    beanAmount = amount;
 }
 
-// ============= Event Value ===============
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ==================== EVENT VALUE ======================
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// -------------------- CONSTRUCTION ---------------------
 // constructor
-EventValue::EventValue(long value)
-    : value(value) {}
-// copy constructor 
-EventValue::EventValue(EventValue const& copyEventValue)
-    : value(copyEventValue.value) {}
-// assignment operator
-EventValue& EventValue::operator=(EventValue const& copyEventValue) {
-    value = copyEventValue.value;
+EventValue::EventValue(long setValue)
+    : value(setValue) {}
+// copy constructor
+EventValue::EventValue(EventValue const& copyValue)
+    : value(copyValue.value) {}
+// assignment operator overload
+EventValue& EventValue::operator=(EventValue const& copyValue) {
+    value = copyValue.value;
     return *this;
 }
-// getter and setter
+// -------------- GETTER & SETTER FUNCTIONS --------------
 long EventValue::getValue() const {
     return value;
 }
-void EventValue::setValue(long valueToSet) {
-    value = valueToSet;
+void EventValue::setValue(long setValue) {
+    value = setValue;
 }
 
-// =========== Events ===========
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// ======================= EVENT =========================
+// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
+// -------------------- CONSTRUCTION ---------------------
 // constructor without eventValue
 Event::Event(std::string const& type, long timestamp)
-    : type(type), timestamp(timestamp) {}
+    : eventType(type), eventTimestamp(timestamp) {}
 // constructor with eventValue
-Event::Event(std::string const& type, long timestamp, EventValue* eventValuePtr)
-    : type(type), timestamp(timestamp) {
-        eventValue = new EventValue(eventValuePtr->getValue());
+Event::Event(std::string const& type, long timestamp, EventValue* copyValue)
+    : eventType(type), eventTimestamp(timestamp) {
+        eventValue = new EventValue(copyValue->getValue());
+        delete copyValue;
     }
 // copy constructor
 Event::Event(Event const& copyEvent)
-    : type(copyEvent.type), timestamp(copyEvent.timestamp), next(copyEvent.next) {
+    : eventType(copyEvent.eventType), eventTimestamp(copyEvent.eventTimestamp), nextEvent(copyEvent.nextEvent) {
         if (copyEvent.eventValue != nullptr) {
-            this-> eventValue = new EventValue(*copyEvent.eventValue);
+            eventValue = new EventValue(*copyEvent.eventValue);
         }
     }
-// assingment operator
-Event& Event::operator=(Event const& copyEvent) {
-    type = copyEvent.type;
-    timestamp = copyEvent.timestamp;
+// assignment overload
+Event& Event::operator=(Event& copyEvent) {
+    eventType = copyEvent.eventType;
+    eventTimestamp = copyEvent.eventTimestamp;
     eventValue = copyEvent.eventValue;
-    next = copyEvent.next;
+    nextEvent = copyEvent.nextEvent;
     return *this;
 }
-
-
-
 // -------------- GETTER & SETTER FUNCTIONS --------------
-long Event::getTimestamp() const {
-    return timestamp;
+Event::~Event() {
+    delete eventValue;
 }
 std::string const& Event::getType() const {
-    return type;
+    return eventType;
 }
-EventValue* Event::getValue() const{
+long Event::getTimestamp() const {
+    return eventTimestamp;
+}
+EventValue* Event::getValue() const {
     return eventValue;
 }
-
 bool Event::hasValue() const {
-    if (eventValue == nullptr)
-        return false;
-    return true;
+    return (eventValue != nullptr);
 }
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ======================= ROAST =========================
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // -------------------- CONSTRUCTION ---------------------
-Roast::Roast(long timestamp) 
+// constructor
+Roast::Roast(long timestamp)
     : roastTimestamp(timestamp) {}
-// copy constructor 
-Roast::Roast(Roast const& copyRoast) 
-    : roastTimestamp(copyRoast.roastTimestamp),
-    numberOfIngredients(copyRoast.numberOfIngredients),
+// copy constructor WHY IS IT SO LONG!!
+Roast::Roast(Roast const& copyRoast)
+    : roastTimestamp(copyRoast.roastTimestamp), numberOfIngredients(copyRoast.numberOfIngredients),
     numberOfEvents(copyRoast.numberOfEvents) {
-    // let's do the hard part and copy everything from the copyRoast!
+        if (copyRoast.ingredientHead != nullptr) {
+            ingredientHead = new Ingredient(*copyRoast.ingredientHead);
+            Ingredient* toPtr = ingredientHead; // copy to this roast
+            Ingredient* fromPtr = copyRoast.ingredientHead->nextIngredient; // from this roast (which points to next)
+            // copy from fromPtr to toPtr
+            while (fromPtr != nullptr) {
+                toPtr->nextIngredient = new Ingredient(*fromPtr);
+                toPtr = toPtr->nextIngredient;
+                fromPtr = fromPtr->nextIngredient;
+            } 
+        }
+        if (copyRoast.eventHead != nullptr) {
+            eventHead = new Event(*copyRoast.eventHead);
+            Event* toPtr = eventHead;
+            Event* fromPtr = copyRoast.eventHead->nextEvent;
+            while (fromPtr != nullptr) {
+                toPtr->nextEvent = new Event(*fromPtr);
+                toPtr = toPtr->nextEvent;
+                fromPtr = fromPtr->nextEvent;
+            }
+        }
+        // all new events here die at the end of their scopes, so no need to delete!
+    }
+// assignment
+Roast& Roast::operator=(Roast const& copyRoast) {
+    roastTimestamp = copyRoast.roastTimestamp;
+    numberOfIngredients = copyRoast.numberOfIngredients;
+    numberOfEvents = copyRoast.numberOfEvents;
+
+    // delete and free the memory!
+    Event* currentEventPtr = eventHead;
+    while (currentEventPtr != nullptr) {
+        Event* nextEventPtr = currentEventPtr->nextEvent; // temp
+        delete currentEventPtr;
+        currentEventPtr = nextEventPtr; // reallocate the temp pointer
+    }// nextEventPtr dies
+
+    Ingredient* currentIngredientPtr = ingredientHead;
+    while (currentIngredientPtr != nullptr) {
+        Ingredient* nextIngredientPtr = currentIngredientPtr->nextIngredient;
+        delete currentIngredientPtr;
+        currentIngredientPtr = nextIngredientPtr;
+    }
+
+    //copy ingredients
     if (copyRoast.ingredientHead != nullptr) {
         ingredientHead = new Ingredient(*copyRoast.ingredientHead);
-        Ingredient* toIng = ingredientHead; // copies ingredient list to this Roast
-        Ingredient* copyIng = copyRoast.ingredientHead->next; // from this copyRoast (what it's pointing to)!
-        while (copyIng != nullptr) {
-            toIng->next = new Ingredient(*copyIng);
-            toIng = toIng->next;
-            copyIng = copyIng->next;
+        Ingredient* toPtr = ingredientHead; // copy to this roast
+        Ingredient* fromPtr = copyRoast.ingredientHead->nextIngredient; // from this roast (which points to next)
+        // copy from fromPtr to toPtr
+        while (fromPtr != nullptr) {
+            toPtr->nextIngredient = new Ingredient(*fromPtr);
+            toPtr = toPtr->nextIngredient;
+            fromPtr = fromPtr->nextIngredient;
         }
     }
+    //copy events
     if (copyRoast.eventHead != nullptr) {
         eventHead = new Event(*copyRoast.eventHead);
-        Event* toEve = eventHead; // copies ingredient list to this Roast
-        Event* copyEve = copyRoast.eventHead->next; // from this copyRoast (what it's pointing to)!
-        while (copyEve != nullptr) {
-            toEve->next = new Event(*copyEve);
-            toEve = toEve->next;
-            copyEve = copyEve->next;
+        Event* toPtr = eventHead;
+        Event* fromPtr = copyRoast.eventHead->nextEvent;
+        while (fromPtr != nullptr) {
+            toPtr->nextEvent = new Event(*fromPtr);
+            toPtr = toPtr->nextEvent;
+            fromPtr = fromPtr->nextEvent;
         }
     }
-
-    // Ingredient* fromIng = copyRoast.ingredientHead;
-    // Ingredient* toIng = this->ingredientHead;
-    // while (fromIng != nullptr) {
-    //     toIng = fromIng;
-    //     toIng = toIng->next;
-    //     fromIng = fromIng->next;
-    // }
-
-    // Event* fromEve = copyRoast.eventHead;
-    // Event* toEve = this->eventHead;
-    // while (fromEve != nullptr) {
-    //     toEve = fromEve;
-    //     toEve = toEve->next;
-    //     fromEve = fromEve->next;
-    // }
-} 
-// destructor???
+    return *this;
+}
+// desctructor
+Roast::~Roast() {
+    Event* currentEventPtr = eventHead;
+    while (currentEventPtr != nullptr) {
+        Event* nextEventPtr = currentEventPtr->nextEvent;
+        delete currentEventPtr;
+        currentEventPtr = nextEventPtr; // nextEventPtr dies at the end of scope
+    }
+    Ingredient* currentIngredientPtr = ingredientHead;
+    while (currentIngredientPtr != nullptr) {
+        Ingredient* nextIngredientPtr = currentIngredientPtr->nextIngredient;
+        delete currentIngredientPtr;
+        currentIngredientPtr = nextIngredientPtr; // nextIngredientPtr dies at the end of scope
+    }
+}
 // ------------------ ADDER FUNCTIONS --------------------
-void Roast::addIngredient(Ingredient const& newIngredient) {
-    // IF STATEMENT TO CHECK IF INGREDIENT IS ALREADY IN LIST ?? 
-    // Ingredient ing = Ingredient(newIngredient);
-    // Ingredient* ingPtr = &ing;
-    // Assign new head if empty list
-    if (ingredientHead == nullptr) {
-        ingredientHead = new Ingredient(newIngredient);
-    } else { // iterate to end of list
-        Ingredient* previousPtr = ingredientHead;
-        while (previousPtr->next != nullptr) {
-            previousPtr = previousPtr->next;
-        }
-        previousPtr->next = new Ingredient(newIngredient);
+void Roast::addIngredient(Ingredient const& ingredient) {
+    if (ingredientHead == nullptr) { // if empty ingredient list
+        ingredientHead = new Ingredient(ingredient);
+    } else {
+        Ingredient* ingredientPtr = ingredientHead;
+        while (ingredientPtr->nextIngredient != nullptr) {
+            ingredientPtr = ingredientPtr->nextIngredient;
+        } // iterate to the end of the linked list
+        ingredientPtr->nextIngredient = new Ingredient(ingredient);
     }
     numberOfIngredients++;
-    // // Go to end of list
-    // Ingredient* temp = ingredientHead;
-    // while (temp->next != nullptr) {
-    //     temp = temp->next;
-    // }
-    // temp->next = ingPtr;
-    // numberOfIngredients++;
 }
-void Roast::addEvent(Event const& newEvent) {
-    // Assign new head if empty list
-    if (eventHead == nullptr) {
-        eventHead = new Event(newEvent);
+void Roast::addEvent(Event const& event) {
+    if (eventHead == nullptr) { // if empty event list
+        eventHead = new Event(event);
     } else {
-        Event* previousPtr = eventHead;
-        while (previousPtr->next != nullptr) {
-            previousPtr = previousPtr->next;
-        }
-        previousPtr->next = new Event(newEvent);
+        Event* eventPtr = eventHead;
+        while (eventPtr->nextEvent != nullptr) {
+            eventPtr = eventPtr->nextEvent;
+        } // iterate to the end of the linked list
+        eventPtr->nextEvent = new Event(event);
     }
     numberOfEvents++;
 }
-// void Roast::addEvent(Event const& newEvent) {
-//     Event* next = eventHead;
-//     eventHead = new Event(newEvent);
-//     eventHead->next = next;
-// }
+// ----------------- REMOVER FUNCTIONS -------------------
+void Roast::removeIngredientByBeanName(std::string const& beanName) {
+    if (ingredientHead == nullptr) {
+        exit(NO_SUCH_MEMBER_IN_LIST);
+    }
+    Ingredient* currentPtr = ingredientHead;
+    Ingredient* previousPtr = nullptr;
+    while (currentPtr != nullptr) {
+        if(currentPtr->getBean().getName() == beanName) {
+            if (previousPtr == nullptr) {
+                ingredientHead = currentPtr->nextIngredient;
+            } else {
+                previousPtr->nextIngredient = currentPtr->nextIngredient;
+            }
+            delete currentPtr;
+            numberOfIngredients--;
+            break;
+        }
+        previousPtr = currentPtr;
+        currentPtr = currentPtr->nextIngredient;
+    }
+}
+void Roast::removeEventByTimestamp(long timestamp) {
+    if (eventHead == nullptr) {
+        exit(NO_SUCH_MEMBER_IN_LIST);
+    }
+    Event* currentPtr = eventHead;
+    Event* previousPtr = nullptr;
+    while (currentPtr != nullptr) {
+        if (currentPtr->getTimestamp() == timestamp) {
+            if (previousPtr != nullptr) {
+                previousPtr->nextEvent = currentPtr->nextEvent;
+            } else {
+                eventHead = currentPtr->nextEvent;
+            }
+            delete currentPtr;
+            numberOfEvents--;
+            break;
+        }
+        previousPtr = currentPtr;
+        currentPtr = currentPtr->nextEvent;
+    }
+}
 // -------------- GETTER & SETTER FUNCTIONS --------------
 long Roast::getTimestamp() const {
     return roastTimestamp;
 }
+int Roast::getEventCount() const {
+    return numberOfEvents;
+}
 int Roast::getIngredientsCount() const {
     return numberOfIngredients;
 }
-// int Roast::getEventCount() const {
-//     return numberOfEvents;
-// }
-int Roast::getEventCount() const {
-    int result = 0;
-    for(Event* iterator = eventHead; iterator != nullptr; iterator = iterator->next) {
-        result++;
-    }
-    return result;
-}
-Ingredient& Roast::getIngredient(int index) const {
-    Ingredient* ingredientPtr = ingredientHead;
-    for (int i = 0; i < index; i++) {
-        ingredientPtr = ingredientPtr->next;
-    }
-    return *ingredientPtr;
-}
-Event& Roast::getEvent(int index) const {
+Event const& Roast::getEventByTimestamp(long timestamp) const {
     Event* eventPtr = eventHead;
-    for (int i = 0; i < index; i++) {
-        eventPtr = eventPtr->next;
-    }
-    return *eventPtr;
-}
-Ingredient& Roast::getIngredientByBeanName(std::string const& beanName) const {
-    Ingredient* ingredientPtr = ingredientHead;
-    while (ingredientPtr->getBean().getName() != beanName) {
-        ingredientPtr = ingredientPtr->next;
-    }
-    if (ingredientPtr == nullptr) {
-        exit(NO_SUCH_MEMBER_IN_LIST);
-    }
-    return *ingredientPtr;
-}
-Event& Roast::getEventByTimestamp(long eventTimestamp) const {
-    Event* eventPtr = eventHead;
-    while (eventPtr->getTimestamp() != eventTimestamp) {
-        eventPtr = eventPtr->next;
+    while (eventPtr->getTimestamp() != timestamp) {
+        eventPtr = eventPtr->nextEvent;
     }
     if (eventPtr == nullptr) {
         exit(NO_SUCH_MEMBER_IN_LIST);
     }
     return *eventPtr;
 }
-
-// ----------------- REMOVER FUNCTIONS -------------------
-void Roast::removeIngredientByBeanName(std::string const& beanName) {
-    Ingredient* previousPtr = ingredientHead;
-    Ingredient* currentPtr = ingredientHead;
-    while (currentPtr != nullptr) {
-        if (currentPtr->getBean().getName() == beanName) {
-            break;
-        }
-        else {
-            previousPtr = currentPtr;
-            currentPtr = currentPtr->next;
-        }
+Ingredient& Roast::getIngredient(int index) const {
+    Ingredient* ingredientPtr = ingredientHead;
+    for (int i = 0; i < index; i++) {
+        ingredientPtr = ingredientPtr->nextIngredient;
     }
-    if (currentPtr == nullptr) {
-        exit(NO_SUCH_MEMBER_IN_LIST);
-    }
-    else {
-        previousPtr->next = currentPtr->next;
-        delete currentPtr;
-    }
+    return *ingredientPtr;
 }
-void Roast::removeEventByTimestamp(long eventTimestamp) {
-    Event* previousPtr = eventHead;
-    Event* currentPtr = eventHead;
-    if (eventHead != nullptr) {
-        currentPtr = currentPtr->next;
-    } // ??? In case nothing in the list
-    while (currentPtr != nullptr) {
-        if (currentPtr->getTimestamp() == eventTimestamp) {
-            break;
-        }
-        else {
-            previousPtr = currentPtr;
-            currentPtr = currentPtr->next;
-        }
+Event& Roast::getEvent(int index) const {
+    Event* eventPtr = eventHead;
+    for (int i = 0; i < index; i++) {
+        eventPtr = eventPtr->nextEvent;
     }
-    if (currentPtr == nullptr) {
-        exit(NO_SUCH_MEMBER_IN_LIST);
-    } 
-    else {
-        previousPtr->next = currentPtr->next;
-        delete currentPtr;
-    }
+    return *eventPtr;
 }
 
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-// ================ OPERATOR OVERLOADING =================
-// +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-Roast& Roast::operator=(Roast const& copyRoast) {
-    roastTimestamp = copyRoast.roastTimestamp;
-    numberOfIngredients = copyRoast.numberOfIngredients;
-    numberOfEvents = copyRoast.numberOfEvents;
-    
-    this->ingredientHead = nullptr;
-    this->eventHead = nullptr;
-
-    //delete
-    Event* currentEventPtr = eventHead;
-    while (currentEventPtr != nullptr) {
-        Event* nextEventPtr = currentEventPtr->next;
-        delete currentEventPtr;
-        currentEventPtr = nextEventPtr;
-    }
-
-    //copy 
-    if (copyRoast.ingredientHead != nullptr) {
-        this->ingredientHead = new Ingredient(*copyRoast.ingredientHead);
-        Ingredient* toIng = ingredientHead;
-        Ingredient* copyIng = copyRoast.ingredientHead->next;
-        while (copyIng != nullptr) {
-            toIng->next = new Ingredient(*copyIng);
-            toIng = toIng->next;
-            copyIng = copyIng->next;
-        }
-    }
-    if (copyRoast.eventHead != nullptr) {
-        this->eventHead = new Event(*copyRoast.eventHead);
-        Event* toEve = eventHead;
-        Event* copyEve = copyRoast.eventHead->next;
-        while (copyEve != nullptr) {
-            toEve->next = new Event(*copyEve);
-            toEve = toEve->next;
-            copyEve = copyEve->next;
-        }
-    }
-    // Ingredient* fromIng = copyRoast.ingredientHead;
-    // Ingredient* toIng = this->ingredientHead;
-    // while (fromIng != nullptr) {
-    //     toIng = fromIng;
-    //     toIng = toIng->next;
-    //     fromIng = fromIng->next;
-    // }
-
-    // Event* fromEve = copyRoast.eventHead;
-    // Event* toEve = this->eventHead;
-    // while (fromEve != nullptr) {
-    //     toEve = fromEve;
-    //     toEve = toEve->next;
-    //     fromEve = fromEve->next;
-    // }
-
-    return *this;
-}
+// It is 6:21am on the day of submission. I pulled an all nighter for this.
+// The words Bean, Event, Ingredient, and Roast have been forever ruined for me.
+// * mic drop *

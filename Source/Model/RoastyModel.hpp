@@ -9,38 +9,34 @@ class Bean {
     std::string name;
 
 public:
-    // Construction
-    Bean(std::string const& beanName);
-    Bean(Bean const& copyBean);
-    Bean& operator=(Bean const& copyBean);
-    // Bean(){};
+    // ------- Construction -------
+    Bean(std::string const& name); // constructor
+    Bean(Bean const& copyBean); // copy constructor
+    Bean& operator=(Bean const& copyBean); // assignment
 
-    // Getter functions
-    std::string const& getName() const;
+    // ------- Getter functions -------
+    std::string const& getName () const;
 };
 
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ==================== INGREDIENT ======================
 // ++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Ingredient {
-    Bean bean;
-    int amount;
+    Bean ingredientBean;
+    int beanAmount;
 
 public:
-    Ingredient* next = nullptr; // For linked list
+    Ingredient* nextIngredient = nullptr;
 
-    // Construction
-    Ingredient(Bean const& bean, int amount);
-    Ingredient(Ingredient const& copyIngredient);
-    Ingredient& operator=(Ingredient const& copyIngredient);
-    // ~Ingredient(){};
-
-    // Getter functions
+    // ------- Construction -------
+    Ingredient(Bean const& bean, int amount); // constructor
+    Ingredient(Ingredient const& copyIngredient); // copy constructor
+    Ingredient& operator=(Ingredient const& copyIngredient); // assignment
+    
+    // ------- Getters and setters -------
     Bean const& getBean() const;
     int getAmount() const;
-    
-    // Setter functions
-    void setAmount(int newAmount);
+    void setAmount(int amount);
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -50,105 +46,76 @@ class EventValue {
     long value;
 
 public:
-    // Construction
-    EventValue(long value);
-    EventValue(EventValue const& copyEventValue);
-    EventValue& operator=(EventValue const& copyEventValue);
-    // ~EventValue();
-
-    // Getter functions
+    // ------- Construction -------
+    EventValue(long setValue); // constructor
+    EventValue(EventValue const& copyValue); // copy constructor
+    EventValue& operator=(EventValue const& copyValue); // assignment
+    
+    // ------- Getters and setters -------
     long getValue() const;
-
-    // Setter functions
-    void setValue(long valueToSet);
+    void setValue(long setValue);
 };
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ======================= EVENT =========================
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-class Event {
-    long timestamp;
-    std::string type;
-    EventValue* eventValue = nullptr; // optional 
+class Event{
+    std::string eventType;
+    long eventTimestamp;
+    EventValue* eventValue = nullptr; //optional
 
 public:
-    Event* next = nullptr; // Linked list
+    Event* nextEvent = nullptr;
 
-    // Construction 
-    Event(std::string const& type, long timestamp, EventValue* eventValuePtr); // with event value
-    Event(std::string const& type, long timestamp);
-    Event(Event const& copyEvent);
-    Event& operator=(Event const& copyEvent);
-    // ~Event();
+    // ------- Construction -------
+    Event(std::string const& type, long timestamp); // constructor without eventValue
+    Event(std::string const& type, long timestamp, EventValue* copyValue); // with eventValue
+    Event(Event const& copyEvent); // copy constructor
+    Event& operator=(Event& copyEvent); // assignment
+    ~Event(); // deconstructor
 
-    // Getter functions
-    long getTimestamp() const;
+    // ------- Getters and setters -------
     std::string const& getType() const;
+    long getTimestamp() const;
     EventValue* getValue() const;
-
-    bool hasValue() const; // Does eventValue point to something??
-
-}; 
+    bool hasValue() const; // for the hasValue test in RoastyTests.cpp
+};
 
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // ======================= ROAST =========================
 // +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 class Roast {
-    long roastTimestamp; // Identifier
-
-    // Lists of ingredients and events
-    // std::list<Ingredient> ingredients; // need to have multiple ingredients
-    // std::list<Event> events;
-    int numberOfIngredients = 0; // initialized to zero? add ingredient will increase by 1
+    long roastTimestamp;
+    int numberOfIngredients = 0;
     int numberOfEvents = 0;
+    // numbers of ingredients are initialized to 0, they are incremented by 1 when add function called, and decremented by 1 when removed
+    // this way we do not need to iterate through the linked list every time we call getXXXcount
 
 public:
     Ingredient* ingredientHead = nullptr;
     Event* eventHead = nullptr;
-    // Construction
-    Roast(long timestamp);
-    Roast(Roast const& copyRoast);
-    Roast& operator=(Roast const& copyRoast);
-    ~Roast(){}; //{delete ingredientHead; delete eventHead;}; // need to delete whole list btw
 
-    // Adder funcitons
-    void addIngredient(Ingredient const& newIngredient);
-    void addEvent(Event const& newEvent);
+    // ------- Construction -------
+    Roast(long timestamp); // constructor
+    Roast(Roast const& copyRoast); // copy constructor
+    Roast& operator=(Roast const& copyRoast); // assignment
+    ~Roast(); // deconstructor
 
-    // Getter functions
+    // ------- Adders -------
+    void addIngredient(Ingredient const& ingredient);
+    void addEvent(Event const& event);
+
+    // ------- Removers -------
+    void removeIngredientByBeanName(std::string const& beanName);
+    void removeEventByTimestamp(long timestamp);
+
+    // ------- Getter functions -------
     long getTimestamp() const;
-    int getIngredientsCount() const;
     int getEventCount() const;
-    // Non-constant references to const functions
+    int getIngredientsCount() const;
+    Event const& getEventByTimestamp(long timestamp) const;
     Ingredient& getIngredient(int index) const;
     Event& getEvent(int index) const;
-    Ingredient& getIngredientByBeanName(std::string const& beanName) const;
-    Event& getEventByTimestamp(long eventTimestamp) const;
-
-    // Removers:
-    void removeIngredientByBeanName(std::string const& beanName);
-    void removeEventByTimestamp(long eventTimestamp);
-
-    // long getTimestamp() const;
-    // // === Ingredients ===
-    // // Ingredient getIngredient(int index);
-    // Ingredient const& getIngredient(int index) const;
-    // int getIngredientsCount();
-    // void addIngredient(Ingredient ingredient); // Do I need to overload for Roasty.cpp line 126?
-    // void removeIngredientByBeanName(std::string beanName);
-    // // === Events ===
-    // // Event getEvent(int index);
-    // Event const& getEvent(int index) const;
-    // int getEventCount();
-    // void addEvent(Event event);
-    // void removeEventFromRoast();
-    // void removeEventByTimestamp(long eventTimestamp);
-    
 };
-
-// // ======= Overloading operators =========
-// bool operator==(std::string const& name, Ingredient const& ing) {return ing.getBean().getName() == name;}; // define comparing operator 
-// bool operator==(std::string const& name, Bean const& bean) {return bean.getName() == name;};
-
 
 #endif
